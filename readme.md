@@ -1,95 +1,62 @@
-# Understanding the Fundamentals of JavaScript: Variables, Data Types, and Operators
+# A Beginner’s Guide to Closures in JavaScript
+One of JavaScript’s most valuable features is closures. This feature allows developers to create self-contained functions with access to their surrounding context in a particular code. 
+When appropriately implemented, closures can improve code quality, encapsulate variables, and create reusable code. At the end of this article, you will learn how closures work and their benefits in JS code.
 
-Understanding JavaScript variables, data types, and operators is essential to becoming a proficient developer. Unlike languages like Java and C++, JavaScript is a dynamically-typed programming language, meaning that you can assign a value of any data type to a variable, and the data type of that variable can change dynamically during runtime based on the value that is given to it later in your code.
-This article will cover the basics of JavaScript variables, data types, operators, and some common pitfalls to avoid.
+## What are Closures?
 
-## JavaScript Variables
+Closures are functions that offer you access to the outer scope of a function from its inner function. This capability means that a closure can access variables in its surrounding environment, despite those variables being outside a function’s specified limits. 
 
-Variables refer to containers that hold values that can be changed later on. In JavaScript, you can declare a variable using the `var`, `let`, or `const` keywords. The `var` keyword is used to express a variable with global scope, whereas `let` and `const` are used to declare a variable with block scope.
-
-For example:
-
-```javascript
-var name = "John";
-let age = 25;
-const PI = 3.14;
-```
-
-Here, three variables have been declared: `name`, `age`, and `PI`, and they have been assigned different values.
-The `var` keyword is used to declare the `name` variable, while the `let` keyword declares the `age` variable. Conversely, the `const` keyword is used to express the `PI` variable.
-
-## JavaScript Data Types
-
-JavaScript has seven primitive data types: `number`, `string`, `boolean`, `null`, `undefined`, `symbol`, and `bigint` and one non-primitive data type, referred to as `object`.
-The example below showcases these data types:
+To create a closure, you need to define a function inside another function and return it. Subsequently, the returned function will be linked to the outer function’s variables, even after the external function has closed. Take a look at the following example to understand this phenomenon better:
 
 ```javascript
-let num = 25; // number
-let name = 'John'; // string
-let isTrue = true; // boolean
-let nothing = null; // null
-let unknown = undefined; // undefined
-let symbol = Symbol('symbol'); // symbol
-let bigInt = 9007199254740991n; // bigint
-let obj = { name: ‘John’, age: 25 }; // object
+function makeGreeting(name) {
+  // name is a variable in the outer scope
+  return function() {
+    // this inner function is a closure
+    console.log("Hello " + name);
+  };
+}
+
+let greetAlice = makeGreeting("Alice");
+let greetBob = makeGreeting("Bob");
+
+greetAlice(); // Hello Alice
+greetBob(); // Hello Bob
 ```
 
-## JavaScript Operators
 
-JavaScript also has several operators used to perform operations on variables and values. These operators include `arithmetic`, `assignment`, `comparison`, `logical`, and `bitwise` operators. See the example below for illustration:
+Here, you have a function `makeGreeting` that takes a parameter `name` and returns another function. The returned function is an inner function that logs “Hello” + name.
+When you call `makeGreeting` with different arguments, you create two other closures: `greetAlice` and `greetBob`. Each closure has access to its own `name` variable from the outer scope.
+Even though `makeGreeting` has returned and its execution context is gone, the inner functions still carry their `name` variables. This capability is achieved because they have closed over them.
+
+## Benefits of Closures
+
+Closures provide several benefits to JS code. The most notable is encapsulation, which allows you to hide implementation details and create self-contained functions. These functions can only expose the necessary functionality. Consequently, encapsulation makes your code more readable, maintainable, and reusable.
+
+Closures can also be used to create private variables in JavaScript. By defining variables inside a function that returns another function, you can create private variables that cannot be accessed outside a specific function. This process can help you prevent unintended changes to the variable’s value and improve the security of your code. The following illustrates this feature:
 
 ```javascript
-let num1 = 5;
-let num2 = 10;
+function counter() {
+  let count = 0;
 
-// arithmetic operators
-console.log(num1 + num2); // 15
-console.log(num2 - num1); // 5
-console.log(num1 * num2); // 50
-console.log(num2 / num1); // 2
+  function increment() {
+    count++;
+    console.log(count);
+  }
 
-// assignment operators
-let num3 = 15;
-num3 += num1; // num3 = num3 + num1
-console.log(num3); // 20
+  return increment;
+}
 
-// comparison operators
-console.log(num1 < num2); // true
-console.log(num1 > num2); // false
-console.log(num1 === num2); // false
-console.log(num1 !== num2); // true
-
-// logical operators
-let isTrue1 = true;
-let isTrue2 = false;
-console.log(isTrue1 && isTrue2); // false
-console.log(isTrue1 || isTrue2); // true
-
-// bitwise operators
-let num4 = 2; // 10 in binary
-let num5 = 3; // 11 in binary
-console.log(num4 & num5); // 2 (10 & 11)
-console.log(num4 | num5); // 3 (10 | 11)
+const incrementCounter = counter();
+incrementCounter(); // Output: 1
+incrementCounter(); // Output: 2
+incrementCounter(); // Output: 3
 ```
 
-## Common Pitfalls
 
-A major pitfall to avoid when working with JavaScript variables is using the `var` keyword to declare variables that should have block scope. This issue often leads to unexpected behaviour and bugs in your code. To avoid this problem, use the `let` or `const` keyword to declare variables that should have a block scope.
-
-Another common pitfall is the failure to understand the difference between `“==”` and `“===”` comparison operators. The `“==”` operator compares the values of the two operands. However, the `“===”` operator compares both the values and the data types of the operands. Failure to use the correct comparison operator can lead to unexpected results.
-
-Being aware of “**type coercion**” in JS is also crucial. This process involves converting one data type to another. JavaScript does this automatically in certain situations, which can lead to unexpected results if you’re unaware. For instance:
-
-```javascript
-console.log(5 + "5"); // '55'
-console.log("5" - 1); // 4
-console.log(null == undefined); // true
-console.log("" == false); // true
-```
-
-Avoiding these pitfalls necessitates thoroughly reading and understanding the documentation and extensively testing your code. You can also use **_type checkers_** and **_linters_** to debug or catch potential errors before they become issues.
+Here, you define a `counter` function that has a private `count` variable. The `counter` function returns another function called `increment`, which increments the `count` variable and logs it to the console. You then assign the `increment` function to a variable called `incrementCounter`.
+When you call `incrementCounter()` multiple times, it increments the `count` variable and logs the new value to the console. The `count` variable is private and cannot be accessed outside the `counter` function, meaning you cannot accidentally modify it or read its value.
 
 ## Conclusion
 
-Variables are containers that hold values that can be changed later on. JS has seven primitive data types and one non-primitive data type. However, it has many operators that can be used to perform operations on variables and values.
-Potential pitfalls to avoid in your JS code include using the var keyword to declare variables that should have block scope. Moreover, not understanding the difference between `==` and `===` comparison operators and unawareness of JavaScript’s type coercion could lead to code problems. You can become a proficient JS developer by understanding these fundamentals and practising regularly.
+Closures are a powerful feature in JavaScript that allows you to create self-contained functions with access to their surrounding context. Closures provide several benefits, including encapsulation, private variables, and improved code quality. By using closures, you can write cleaner, more readable, and more maintainable code.
